@@ -1,8 +1,8 @@
 #pragma once
 #include "Exports.h"
-#include "include/SimpleMath.h"
+#include "SimpleMath.h"
 #include "Keys.h"
-#include "include/Delegates.h"
+#include "Delegates.h"
 #include "MathTypes.h"
 
 namespace Engine

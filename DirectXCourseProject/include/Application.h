@@ -2,6 +2,7 @@
 #include "Exports.h"
 #include "Display.h"
 #include "InputDevice.h"
+#include "DebugRenderSysImpl.h"
 #include "TriangleComponent.h"
 #include "GameComponent.h"
 #include "Camera.h"
@@ -29,6 +30,7 @@ namespace Engine{
 		virtual void UpdateInternal() = 0;
 
 
+
 		bool intersect(Vector2 min_a, Vector2 max_a, Vector2 min_b, Vector2 max_b)
 		{
 			return (min_a.x <= max_b.x) &&
@@ -42,9 +44,12 @@ namespace Engine{
 		int player2_score = 0;
 		void ResetGame();
 
+		bool isMouseUsed = true;
+
 		Transform transform[6];
 
 		Microsoft::WRL::ComPtr<ID3D11Device> getDevice() { return device; };
+		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> getStencilState() { return depthStencilState.Get(); };
 		ID3D11DeviceContext* getContext() { return context; };
 
 
@@ -72,6 +77,7 @@ namespace Engine{
 
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencilBuffer;
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthStencilView;
+		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState;
 
 		
 

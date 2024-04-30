@@ -28,11 +28,15 @@ set(HEADER_FILES
 	include/Camera.h 
 	include/Display.h 
 	include/GameComponent.h
+	include/DebugRenderSysImpl.h
 	include/InputDevice.h 
 	include/PlaneComponent.h 
 	include/SphereComponent.h
 	include/Transform.h 
 	include/TriangleComponent.h 
+	include/VertexPositionColor.h
+	include/VertexPositionNormalBinormalTangentColorTex.h
+	include/VertexPositionTex.h
 	include/Keys.h 
 	include/MathTypes.h 
 	include/pch.h
@@ -55,6 +59,7 @@ set(HEADER_FILES
 set(MODULE_FILES
 	src/Application.cpp 
 	src/Camera.cpp 
+	src/DebugRenderSysImpl.cpp
 	src/Display.cpp 
 	src/GameComponent.cpp
 	src/InputDevice.cpp 
@@ -62,6 +67,9 @@ set(MODULE_FILES
 	src/SphereComponent.cpp
 	src/Transform.cpp 
 	src/TriangleComponent.cpp
+	src/VertexPositionColor.cpp
+	src/VertexPositionNormalBinormalTangentColorTex.cpp
+	src/VertexPositionTex.cpp
 	src/Delegates.cpp
     src/imgui.cpp
     src/imgui_draw.cpp
@@ -75,6 +83,10 @@ set(MODULE_FILES
 
 add_library(${PROJECT_NAME} SHARED ${MODULE_FILES} ${HEADER_FILES})
 
+
+ if (MSVC)
+     target_compile_definitions(${PROJECT_NAME} PUBLIC UNICODE _UNICODE)
+ endif()
 
 
 #include(GenerateExportHeader)

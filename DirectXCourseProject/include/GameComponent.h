@@ -1,6 +1,6 @@
 #pragma once
 #include "Exports.h"
-#include "include/SimpleMath.h"
+#include "SimpleMath.h"
 #include "Transform.h"
 #include "MathTypes.h"
 
@@ -32,5 +32,5 @@ public:
 	virtual bool Initialize() = 0;
 	virtual void Reload() = 0;
 	virtual void Update() = 0;
-	virtual void Update(DirectX::SimpleMath::Matrix mat, Vector3 offset, Vector3 scale,Matrix rotation) = 0;
+	virtual void Update(Matrix cameraProjection, Matrix cameraView, Matrix world) = 0;
 };

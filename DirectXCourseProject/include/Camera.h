@@ -1,7 +1,8 @@
 #pragma once
-#include "include/SimpleMath.h"
+#include "SimpleMath.h"
 #include "MathTypes.h"
 #include "Exports.h"
+#include "Transform.h"
 #include "iostream"
 
 
@@ -21,7 +22,7 @@ public:
 		mRight = Vector3(1.0f, 0.0f, 0.0f);
 		mUp = Vector3(0.0f, 1.0f, 0.0f);
 		mLook = Vector3(0.0f, 0.0f, 1.0f);
-		SetLens(103, 0.5, 0.1f, 1000.0f);
+		SetLens(90, 0.5, 0.1f, 1000.0f);
 	}
 	friend class Engine::Application;
 	Engine::Application* _app;
@@ -57,13 +58,24 @@ public:
 	// Set frustum.
 	void SetLens(float fovY, float aspect, float zn, float zf);
 
-	// Define camera space via LookAt parameters.
-	void LookAt(Vector3 pos, Vector3 target, Vector3 worldUp);
-	void LookAt(const Vector3& pos, const Vector3& target, const Vector3& up);
-
 	// Get View/Proj matrices.
 	Matrix View()const;
 	Matrix Proj()const;
+	// After modifying camera position/orientation, call to rebuild the view matrix.
+	void UpdateViewMatrix();
+	void Bind();
+
+	void Update();
+	void Rotate(Vector2 offset);
+
+	// Camera coordinate system with coordinates relative to world space.
+	Vector3 mPosition;
+	Vector3 mRight;
+	Vector3 mUp;
+	Vector3 mLook;
+
+	Vector2 prevMousePos;
+
 	Matrix ViewProj()const;
 
 	// Strafe/Walk the camera a distance d.
@@ -74,23 +86,9 @@ public:
 	// Rotate the camera.
 	void Pitch(float angle);
 	void RotateY(float angle);
-	void Rotate(Vector2 offset);
 
-	// After modifying camera position/orientation, call to rebuild the view matrix.
-	void UpdateViewMatrix();
-
-
-	void Bind();
-
-private:
-
-	// Camera coordinate system with coordinates relative to world space.
-	Vector3 mPosition;
-	Vector3 mRight;
-	Vector3 mUp;
-	Vector3 mLook;
-
-	Vector2 prevMousePos;
+	void LookAt(Vector3 pos, Vector3 target, Vector3 worldUp);
+	void LookAt(const Vector3& pos, const Vector3& target, const Vector3& up);
 
 	// Cache frustum properties.
 	float mNearZ;
@@ -103,14 +101,27 @@ private:
 	DirectX::SimpleMath::Quaternion rotation_;
 
 
-	const double SENSITIVITY = 0.000000001f;
+	float xMouseSpeed = 10;
+	float yMouseSpeed = 7;
 
-	float angle_Yaw=-180.0f;
-	float angle_Pitch=0.0f;
+	float angle_Yaw = -180.0f;
+	float angle_Pitch = 0.0f;
 
-	// Cache View/Proj matrices.
+
+	Transform* getTransform() {
+		return &transform;
+	}
+
+
+private:
+
 	Matrix mView;
 	Matrix mProj;
+
+	Vector3 focusPosition = Vector3::Zero;
+
+	Transform transform;
+	bool isDirty = false;
 };
 
 

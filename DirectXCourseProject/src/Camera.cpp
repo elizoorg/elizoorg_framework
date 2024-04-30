@@ -10,7 +10,7 @@ Camera::Camera()
 	mUp(0.0f, 1.0f, 0.0f),
 	mLook(0.0f, 0.0f, 1.0f)
 {
-	SetLens(103 , 0.5, 0.1f, 1000.0f);
+	SetLens(70, _app->getDisplay()->getWidth() / _app->getDisplay()->getHeight(), 0.1f, 1000.0f);
 }
 Camera::~Camera()
 {
@@ -29,11 +29,13 @@ Vector3 Camera::GetPosition() const
 
 void Camera::SetPosition(float x, float y, float z)
 {
+	transform.SetPosition(Vector3(x, y, z));
 	mPosition = Vector3(x, y, z);
 }
 
 void Camera::SetPosition(const Vector3& v)
 {
+	transform.SetPosition(v);
 	mPosition = v;
 }
 
@@ -123,8 +125,8 @@ void Camera::SetLens(float fovY, float aspect, float zn, float zf)
 
 	mNearWindowHeight = 2.0f * mNearZ * tanf(0.5f * mFovY);
 	mFarWindowHeight = 2.0f * mFarZ * tanf(0.5f * mFovY);
-
-	mProj = Matrix::CreatePerspectiveFieldOfView(Math::Radians(mFovY), mAspect, mNearZ, mFarZ);
+	const float fovRadians = DirectX::XMConvertToRadians(mFovY);
+	mProj = DirectX::XMMatrixPerspectiveFovLH(fovRadians, mAspect, mNearZ, mFarZ);
 	//mProj = DirectX::XMMatrixOrthographicLH(1600, 800, 0.1f, 1.0f);
 	
 	//mProj = Matrix::CreateOrthographic(800, 800, mNearZ, mFarZ);
@@ -211,30 +213,19 @@ inline XMFLOAT3 GMathVF(XMVECTOR& vec)
 
 void Camera::Rotate(Vector2 offset)
 {
-	//std::cout << _app->deltaTime << std::endl;
-	//std::cout << (float)offset.y * (_app->deltaTime) << " " <<(float)offset.x * (_app->deltaTime) << std::endl;
-	//offset.x *= SENSITIVITY;
-	//offset.y *= SENSITIVITY;
-	//angle_Pitch += offset.x * _app->deltaTime;
-	//angle_Yaw += offset.y * _app->deltaTime;
-	//std::cout << angle_Pitch << " " << angle_Yaw << "\n";
-	//std::cout << _app->deltaTime << " \n";
-	rotation_ *= Quaternion::CreateFromAxisAngle(Vector3::Up, static_cast<float>(offset.x) * _app->deltaTime);
-	rotation_ *= Quaternion::CreateFromAxisAngle(Vector3::Right, static_cast<float>(-offset.y) * _app->deltaTime);
+	if (_app->isMouseUsed) {
 
 
-	//Pitch(Math::Radians(angle_Pitch));
-	//RotateY(Math::Radians(angle_Yaw));
+	transform.AdjustEulerRotation(
+		 static_cast<float>(offset.x) *_app->deltaTime * xMouseSpeed,
+		-1 * static_cast<float>(offset.y) * _app->deltaTime * yMouseSpeed, 0);
+	}
 }
 
 void Camera::UpdateViewMatrix()
 {
-	const auto rot = rotation_.ToEuler();
-	const auto rotation = Quaternion::CreateFromYawPitchRoll(-rot.y, rot.x, 0);
-	const auto target = Vector3::Transform(Vector3::Forward, rotation);
-	const auto up = Vector3::Transform(Vector3::Up, rotation);
-	mView = XMMatrixLookAtLH(mPosition, mPosition + target, up);
-	//angle_Yaw += 1;
+
+
 	//Rotate(Vector2(0.0f,0.0f));
 	/*Vector3 R = mRight;
 	Vector3 U = mUp;
@@ -272,4 +263,20 @@ void Camera::UpdateViewMatrix()
 void Camera::Bind()
 {
 	_app->getInput()->DOnMouseMove.AddRaw(this, &Camera::Rotate);
+}
+
+void Camera::Update()
+{
+	if (transform.IsDirty()) {
+		transform.Update();
+		isDirty = true;
+	}
+	if (isDirty) {
+		focusPosition = transform.GetForwardVector() + transform.GetWorldPosition();
+		mView = XMMatrixLookAtLH(transform.GetWorldPosition(),focusPosition, transform.GetUpVector());
+		SetLens(103, 1, 0.1f, 1000.0f);
+		isDirty = false;
+	}
+
+
 }

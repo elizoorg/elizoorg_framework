@@ -4,11 +4,15 @@
 
 SphereComponent::~SphereComponent()
 {
+	DestroyResources();
 	std::cout << "We're creating triangle\n";
 }
 
 void SphereComponent::DestroyResources()
 {
+	g_pConstantBuffer11->Release();
+	ib->Release();
+	vb->Release();
 }
 
 void SphereComponent::Reload()
@@ -73,8 +77,6 @@ bool SphereComponent::Initialize()
 		indeces.push_back(baseIndex + i + 1);
 	}
 
-	std::cout << points.size() << " " << indeces.size() << std::endl;
-
 	for (Vector4 p : points) {
 		DirectX::XMFLOAT4 XMp(p.x, p.y, p.z, p.w);
 		dpoints.push_back(XMp);
@@ -104,7 +106,7 @@ bool SphereComponent::Initialize()
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
-			MessageBox(_app->getDisplay()->getHWND(), "MyVeryFirstShader.hlsl", "Missing Shader File", MB_OK);
+			MessageBox(_app->getDisplay()->getHWND(), L"MyVeryFirstShader.hlsl", L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -128,7 +130,7 @@ bool SphereComponent::Initialize()
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
-			MessageBox(_app->getDisplay()->getHWND(), "MyVeryFirstShader.hlsl", "Missing Shader File", MB_OK);
+			MessageBox(_app->getDisplay()->getHWND(), L"MyVeryFirstShader.hlsl", L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -211,6 +213,7 @@ bool SphereComponent::Initialize()
 	CD3D11_RASTERIZER_DESC rastDesc = {};
 	rastDesc.CullMode = D3D11_CULL_NONE;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
+	rastDesc.FrontCounterClockwise = true;
 
 	//ID3D11RasterizerState* rastState;
 	res = _app->getDevice()->CreateRasterizerState(&rastDesc, &rastState);
@@ -218,12 +221,14 @@ bool SphereComponent::Initialize()
 
 }
 
-void SphereComponent::Update(DirectX::SimpleMath::Matrix mat, Vector3 offset, Vector3 scale, Matrix rotation)
+void SphereComponent::Update(Matrix cameraProjection, Matrix cameraView, Matrix world)
 {
-	buffer.gWorldViewProj = mat;
-	buffer.offset = Vector4(offset.x, offset.y, offset.z, 1.0f);
-	buffer.scale = Vector4(scale.x, scale.y, scale.z, 1.0f);;
-	buffer.rotation = rotation;
+	if (g_pConstantBuffer11) {
+		g_pConstantBuffer11->Release();
+	}
+	buffer.cameraProj = cameraProjection;
+	buffer.cameraView = cameraView;
+	buffer.world = world;
 
 	cbDesc.ByteWidth = sizeof(VS_CONSTANT_BUFFER);
 	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -239,9 +244,10 @@ void SphereComponent::Update(DirectX::SimpleMath::Matrix mat, Vector3 offset, Ve
 	InitData.SysMemSlicePitch = 0;
 	_app->getDevice()->CreateBuffer(&cbDesc, &InitData,
 		&g_pConstantBuffer11);
-	
+
 
 }
+
 
 
 void SphereComponent::Update()
@@ -254,6 +260,7 @@ void SphereComponent::Draw()
 	UINT strides[] = {sizeof(DirectX::XMFLOAT4)*2};
 	UINT offsets[] = {0};
 	_app->getContext()->RSSetState(rastState);
+	_app->getContext()->OMSetDepthStencilState(_app->getStencilState().Get(), 0);
 	_app->getContext()->IASetInputLayout(layout);
 	_app->getContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	_app->getContext()->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);

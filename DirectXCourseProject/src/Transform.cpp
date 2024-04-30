@@ -1,61 +1,168 @@
 #include "Transform.h"
 
-void Transform::setPosition(Vector3 position)
+Vector3 Transform::GetWorldPosition()
 {
-	Position = position;
+	return Vector3(world.m[3]);
 }
 
-void Transform::setLocalPosition(Vector3 position)
+Vector3 Transform::GetScale()
 {
-	LocalPosition = position;
+	return localScale;
 }
 
-void Transform::setScale(Vector3 scale)
+Quaternion Transform::GetQuaternionRotate()
 {
-	Scale = scale;
+	return localRotate;
 }
 
-void Transform::setRotationVector(Vector3 rotation)
+Vector3 Transform::GetEulerAngles()
 {
-	RotationVector = rotation;
+	return localEulerAngles;
 }
 
-void Transform::setRotationAngle(Vector3 angle)
+Vector3 Transform::GetRightVector()
 {
-	RotationAngles = angle;
+	auto v = Vector3{ worldTranspose._11, worldTranspose._21, worldTranspose._31 };
+	v.Normalize();
+	return v * -1;
 }
 
-void Transform::setSpeed(Vector3 speed)
+Vector3 Transform::GetUpVector()
 {
-	Velocity = speed;
+	Vector3 v = Vector3{ worldTranspose._12, worldTranspose._22, worldTranspose._32 };
+	v.Normalize();
+	return v;
 }
 
-void Transform::setRotationSpeed(Vector3 speed)
+Vector3 Transform::GetForwardVector()
 {
-	RotationSpeed = speed;
+	Vector3 v = Vector3{ worldTranspose._13, worldTranspose._23, worldTranspose._33 };
+	v.Normalize();
+	return v * -1;
 }
 
-void Transform::setRotationSpeed(float speed)
+Matrix Transform::GetWorldMatrix()
 {
-	RotationSpeed = Vector3(speed);
+	return world;
 }
 
-void Transform::Move(Vector3 offset)
+bool Transform::IsDirty()
 {
-	Position += offset;
+	return isDirty;
 }
 
-void Transform::ApplyVelocity(Vector3 velocity)
+Matrix Transform::CalculateWorldMatrix()
 {
-	Speed = velocity;
+	Matrix result = Matrix::CreateScale(localScale) * Matrix::CreateFromQuaternion(localRotate) * Matrix::CreateTranslation(localPosition);
+	if (parent != nullptr) {
+		result = result * parent->CalculateWorldMatrix();
+	}
+	return result;
 }
 
-void Transform::UpdateChilds()
+Transform::Transform(Vector3 pos, Quaternion rot, Vector3 scale): localPosition(pos),localRotate(rot), localScale(scale)
 {
+	parent = nullptr;
+}
+
+Transform::Transform():Transform(Vector3::Zero,Quaternion::Identity,Vector3::One)
+{
+	parent = nullptr;
+}
+
+void Transform::SetPosition(const Vector3& pos)
+{
+	localPosition = pos;
+	world = CalculateWorldMatrix();
+	isDirty = true;
+}
+
+void Transform::SetScale(const Vector3& scale)
+{
+	localScale = scale;
+	world = CalculateWorldMatrix();
+	isDirty = true;
+}
+
+void Transform::SetMatrixRotate(const Matrix& rotation)
+{
+	localRotate = Quaternion::CreateFromRotationMatrix(rotation);
+	world = CalculateWorldMatrix();
+	isDirty = true;
+}
+
+void Transform::SetQuaternionRotate(const Quaternion& quaternion)
+{
+	localRotate = quaternion;
+	world = CalculateWorldMatrix();
+	isDirty = true;
+}
+
+void Transform::SetWorldMatrix(const Matrix& matrix)
+{
+	world = matrix;
+	isDirty = true;
+}
+
+void Transform::SetParent(Transform* transform)
+{
+	parent = transform;
+}
+
+void Transform::SetEulerRotate(const Vector3& eulerAngle)
+{
+	localEulerAngles = eulerAngle;
+	localRotate = Quaternion::CreateFromYawPitchRoll(Math::Radians(eulerAngle.x), Math::Radians(eulerAngle.y), Math::Radians(eulerAngle.z));
+	world = CalculateWorldMatrix();
+	isDirty = true;
+}
+
+void Transform::SetRadianRotate(const Vector3& radianAngle)
+{
+	localEulerAngles = Vector3(Math::Degrees(radianAngle.x), Math::Degrees(radianAngle.y), Math::Degrees(radianAngle.z));
+	localRotate = Quaternion::CreateFromYawPitchRoll(radianAngle.x,radianAngle.y,radianAngle.z);
+	world = CalculateWorldMatrix();
+	isDirty = true;
+}
+
+void Transform::AdjustPosition(const Vector3& pos)
+{
+	SetPosition(localPosition + pos);
+}
+
+void Transform::AdjustPosition(float x, float y, float z)
+{
+	SetPosition(localPosition + Vector3(x,y,z));
+}
+
+void Transform::AdjustEulerRotation(const Vector3& eulerAngle)
+{
+	SetEulerRotate(localEulerAngles + eulerAngle);
+}
+
+void Transform::AdjustEulerRotation(float roll, float pitch, float yaw)
+{
+	SetEulerRotate(localEulerAngles + Vector3(roll,pitch,yaw));
 }
 
 void Transform::Update()
 {
-	Position += Velocity;
-	RotationAngles += RotationSpeed;
+	if (!parent) {
+		if (isDirty) {
+			worldTranspose = world.Transpose();
+			isDirty = false;
+		}
+	}
+	else {
+		if (parent->IsDirty()) {
+			world = CalculateWorldMatrix();
+			worldTranspose = world.Transpose();
+			isDirty = false;
+		}
+		else {
+			worldTranspose = world.Transpose();
+			isDirty = false;
+		}
+	}
+	
 }

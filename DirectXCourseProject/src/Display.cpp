@@ -184,22 +184,6 @@ LRESULT WinApi_Display::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM 
 	}
 }
 
-std::wstring StringToWString(const std::string& s)
-{
-	std::wstring temp(s.length(), L' ');
-	std::copy(s.begin(), s.end(), temp.begin());
-	return temp;
-}
-
-
-std::string WStringToString(const std::wstring& s)
-{
-	std::string temp(s.length(), ' ');
-	std::copy(s.begin(), s.end(), temp.begin());
-	return temp;
-}
-
-
 bool WinApi_Display::CreateDisplay()
 {
 	
@@ -216,8 +200,7 @@ bool WinApi_Display::CreateDisplay()
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
 	wc.lpszMenuName = nullptr;
-	std::string narrow_str(WStringToString(applicationName));
-	wc.lpszClassName = narrow_str.c_str();
+	wc.lpszClassName = applicationName;
 	wc.cbSize = sizeof(WNDCLASSEX);
 
 	RegisterClassEx(&wc);

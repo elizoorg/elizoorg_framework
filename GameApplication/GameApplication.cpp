@@ -1,13 +1,23 @@
 #include "GameApplication.h"
 
+
 	GameApplication::GameApplication()
 	{
 		instance = this;
 		Device = new InputDevice(this);
+		
 	}
 	GameApplication* GameApplication::instance = nullptr;
 	GameApplication::~GameApplication()
 	{
+
+		ImGui_ImplDX11_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
+
+		for (auto comp : Components) {
+			delete comp;
+		}
 	}
 
 
@@ -55,13 +65,18 @@
 	void GameApplication::Draw()
 	{
 
+	
+
+
 		context->OMSetRenderTargets(1, &rtv, depthStencilView.Get());
-
-
-
-		float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		float color[] = { 0.6f, 0.6f, 0.6f, 1.0f };
 		context->ClearRenderTargetView(rtv, color);
 		context->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+
+		
+
+
 		D3D11_VIEWPORT viewport = {};
 		viewport.Width = static_cast<float>(_display->getWidth());
 		viewport.Height = static_cast<float>(_display->getHeight());
@@ -72,13 +87,17 @@
 
 		context->RSSetViewports(1, &viewport);
 
+		Components[22]->Draw();
+		
+		for (size_t t = 0; t < Components.size() - 1; t++)
+		{
+			Components[t]->Draw();
+		}
 
 
 
-		for (auto& comp : Components)
-			comp->Draw();
-
-
+		
+		system->Draw(deltaTime);
 		
 		bool qq = false;
 
@@ -93,7 +112,9 @@
 
 		ImGui::NewFrame();
 
-		ImGui::Begin("Testestestestestestest");
+	
+
+		ImGui::Begin("Testesteste4343242stestestest");
 		bool isHovered = ImGui::IsItemHovered();
 		bool isFocused = ImGui::IsItemFocused();
 		ImVec2 mousePositionAbsolute = ImGui::GetMousePos();
@@ -103,6 +124,28 @@
 		ImGui::Text("Is screen focused? %s", isFocused ? "Yes" : "No");
 		ImGui::Text("Position: %f, %f", mousePositionRelative.x, mousePositionRelative.y);
 		ImGui::Text("Mouse clicked: %s", ImGui::IsMouseDown(ImGuiMouseButton_Left) ? "Yes" : "No");
+
+
+		ImGui::Text("%f %f %f %f", camera->GetPosition().x, camera->GetPosition().y, camera->GetPosition().z,1.0f);
+
+		ImGui::Text("%f %f %f %f", transform[0].GetWorldPosition().x, transform[0].GetWorldPosition().y, transform[0].GetWorldPosition().z, planets[0].radius);
+		ImGui::Text("%f %f %f %f", transform[1].GetWorldPosition().x, transform[1].GetWorldPosition().y, transform[1].GetWorldPosition().z, planets[1].radius);
+		ImGui::Text("%f %f %f %f", transform[2].GetWorldPosition().x, transform[2].GetWorldPosition().y, transform[2].GetWorldPosition().z, planets[2].radius);
+		ImGui::Text("%f %f %f %f", transform[3].GetWorldPosition().x, transform[3].GetWorldPosition().y, transform[3].GetWorldPosition().z, planets[3].radius);
+		ImGui::Text("%f %f %f %f", transform[4].GetWorldPosition().x, transform[4].GetWorldPosition().y, transform[4].GetWorldPosition().z, planets[4].radius);
+		ImGui::Text("%f %f %f %f", transform[5].GetWorldPosition().x, transform[5].GetWorldPosition().y, transform[5].GetWorldPosition().z, planets[5].radius);
+		ImGui::Text("%f %f %f %f", transform[6].GetWorldPosition().x, transform[6].GetWorldPosition().y, transform[6].GetWorldPosition().z, planets[6].radius);
+
+
+
+		ImGui::SliderFloat("Test", &angle, 0.0f, 6.28f);
+		ImGui::SliderFloat("Platen0", &planets[0].angle, 0.0f, 360.28f);
+		ImGui::SliderFloat("Platen1", &planets[1].angle, 0.0f, 360.28f);
+		ImGui::SliderFloat("Platen2", &planets[2].angle, 0.0f, 360.28f);
+		ImGui::SliderFloat("Platen3", &planets[3].angle, 0.0f, 360.28f);
+		ImGui::SliderFloat("Platen4", &planets[4].angle, 0.0f, 360.28f);
+		ImGui::SliderFloat("Platen5", &planets[5].angle, 0.0f, 360.28f);
+		ImGui::SliderFloat("Platen6", &planets[6].angle, 0.0f, 360.28f);
 
 
 		ImGui::End();
@@ -119,7 +162,7 @@
 
 
 		swapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
-
+		
 
 
 
@@ -137,8 +180,9 @@
 	{
 		Device = new InputDevice(this);
 		camera = new Camera(this);
-		camera->SetPosition(0, 0, 200);
+		camera->SetPosition(0, 0, 0);
 		camera->Bind();
+	
 		swapDesc.BufferCount = 2;
 		swapDesc.BufferDesc.Width = _display->getWidth();
 		swapDesc.BufferDesc.Height = _display->getHeight();
@@ -184,26 +228,67 @@
 			std::cout << "So,unexpected shit happens2\n";
 		}
 
-		TriangleComponent* trag = new TriangleComponent(this);
-		TriangleComponent* trag1 = new TriangleComponent(this);
-		TriangleComponent* trag2 = new TriangleComponent(this);
 		SphereComponent* sphere = new SphereComponent(this);
 		SphereComponent* sphere2 = new SphereComponent(this);
 		SphereComponent* sphere3 = new SphereComponent(this);
-		Components.push_back(trag);
-		Components.push_back(trag1);
-		Components.push_back(trag2);
+		SphereComponent* sphere4 = new SphereComponent(this);
+		SphereComponent* sphere5 = new SphereComponent(this);
+		SphereComponent* sphere6 = new SphereComponent(this);
+		SphereComponent* sphere7 = new SphereComponent(this);
+
+
+		TriangleComponent* cube = new TriangleComponent(this);
+		TriangleComponent* cube2 = new TriangleComponent(this);
+		TriangleComponent* cube3 = new TriangleComponent(this);
+		TriangleComponent* cube4 = new TriangleComponent(this);
+		TriangleComponent* cube5 = new TriangleComponent(this);
+		TriangleComponent* cube6 = new TriangleComponent(this);
+		TriangleComponent* cube7 = new TriangleComponent(this);
+		TriangleComponent* cube8 = new TriangleComponent(this);
+		TriangleComponent* cube9 = new TriangleComponent(this);
+		TriangleComponent* cube10 = new TriangleComponent(this);
+		TriangleComponent* cube11 = new TriangleComponent(this);
+		TriangleComponent* cube12 = new TriangleComponent(this);
+		TriangleComponent* cube13 = new TriangleComponent(this);
+		TriangleComponent* cube14 = new TriangleComponent(this);
+		TriangleComponent* cube15 = new TriangleComponent(this);
+		PlaneComponent* plane = new PlaneComponent(this);
+
 		Components.push_back(sphere);
 		Components.push_back(sphere2);
 		Components.push_back(sphere3);
+		Components.push_back(sphere4);
+		Components.push_back(sphere5);
+		Components.push_back(sphere6);
+		Components.push_back(sphere7);
+
+		Components.push_back( cube );
+		Components.push_back( cube2 );
+		Components.push_back( cube3 );
+		Components.push_back( cube4 );
+		Components.push_back( cube5 );
+		Components.push_back( cube6 );
+		Components.push_back( cube7 );
+		Components.push_back( cube8 );
+		Components.push_back( cube9 );
+		Components.push_back( cube10);
+		Components.push_back( cube11);
+		Components.push_back( cube12);
+		Components.push_back( cube13);
+		Components.push_back( cube14);
+		Components.push_back( cube15);
+
+		Components.push_back(plane);
+
 
 		for (auto comp : Components) {
 			comp->Initialize();
 		}
 
+		system = new DebugRenderSysImpl(this);
+		system->SetCamera(camera);
 
-
-		rastDesc.CullMode = D3D11_CULL_NONE;
+		rastDesc.CullMode = D3D11_CULL_FRONT;
 		rastDesc.FillMode = D3D11_FILL_WIREFRAME;
 
 
@@ -229,6 +314,27 @@
 		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 		depthStencilDesc.CPUAccessFlags = 0;
 		depthStencilDesc.MiscFlags = 0;
+		depthStencilDesc.SampleDesc = { 1,0 };
+
+		D3D11_DEPTH_STENCIL_DESC depthstencildesc;
+
+
+		depthstencildesc.DepthEnable = true;
+		depthstencildesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthstencildesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+		depthstencildesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP; //KEEP
+		depthstencildesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR; //INCR
+		depthstencildesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP; //KEEP
+		depthstencildesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+		// Stencil operations if pixel is back-facing
+		depthstencildesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP; //KEEP
+		depthstencildesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR; //DECR
+		depthstencildesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP; //KEEP
+		depthstencildesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	
 
 		res = device->CreateTexture2D(&depthStencilDesc, NULL, depthStencilBuffer.GetAddressOf());
 		if (FAILED(res)) {
@@ -241,9 +347,10 @@
 		}
 
 
-
-		
-
+		res = device->CreateDepthStencilState(&depthstencildesc, depthStencilState.GetAddressOf());
+		if (FAILED(res)) {
+			std::cout << "So,unexpected shit happens7\n";
+		}
 
 
 	}
@@ -262,6 +369,7 @@
 
 	void GameApplication::RestoreTargets()
 	{
+		context->OMSetRenderTargets(1, &rtv, depthStencilView.Get());
 	}
 
 	bool GameApplication::Update()
@@ -271,7 +379,7 @@
 		{
 
 		}
-
+		auto tr = camera->getTransform();
 		if (Device->IsKeyDown(Keys::Escape))
 		{
 			isClosed = true;
@@ -279,27 +387,31 @@
 		}
 		if (Device->IsKeyDown(Keys::D))
 		{
-			camera->Strafe(1);
+			tr->AdjustPosition(tr->GetRightVector());
 		}
 		if (Device->IsKeyDown(Keys::A))
 		{
-			camera->Strafe(-1);
+			tr->AdjustPosition(tr->GetRightVector()*-1);
 		}
 		if (Device->IsKeyDown(Keys::S))
 		{
-			camera->Walk(1);
+			tr->AdjustPosition(tr->GetForwardVector()*-1);
 		}
 		if (Device->IsKeyDown(Keys::W))
 		{
-			camera->Walk(-1);
+			tr->AdjustPosition(tr->GetForwardVector());
 		}
 		if (Device->IsKeyDown(Keys::Space))
 		{
-			camera->Fly(1);
+			tr->AdjustPosition(tr->GetUpVector());
+		}
+		if (Device->IsKeyDown(Keys::J))
+		{
+			isMouseUsed = !isMouseUsed;
 		}
 		if (Device->IsKeyDown(Keys::LeftShift))
 		{
-			camera->Fly(-1);
+			tr->AdjustPosition(tr->GetUpVector()*-1);
 		}
 		if (Device->IsKeyDown(Keys::LeftButton)) {
 			ImGuiIO& io = ImGui::GetIO();
@@ -309,8 +421,10 @@
 			ImGuiIO& io = ImGui::GetIO();
 			io.AddMouseButtonEvent(0, false);
 		}
-
-
+		if (isMouseUsed) {
+			SetCursorPos(_display->getWidth() / 2, _display->getHeight() / 2);
+		}
+	
 		
 
 
@@ -318,29 +432,43 @@
 			std::cout << "It's working!\n";
 		}
 
-		transform[3].setRotationSpeed(1);
-		transform[4].setRotationSpeed(-1);
-		transform[5].setRotationSpeed(5);
+
+		camera->Update();
 
 
-
-		transform[4].setPosition(transform[3].getPosition() + Vector3::Transform(Vector3(50, 0, 0), Matrix::CreateFromAxisAngle(transform[3].getRotationVector(),
-			Math::Radians(transform[3].getRotationAngle().x))));
-
-		transform[5].setPosition(transform[4].getPosition() + Vector3::Transform(Vector3(50, 0, 0), Matrix::CreateFromAxisAngle(transform[3].getRotationVector(),
-			Math::Radians(transform[4].getRotationAngle().x))));
-
-		camera->UpdateViewMatrix();
-
-
-		for (size_t t = 0; t < 6; t++) {
+		for (size_t t = 0; t < 22; t++) {
+			planets[t].angle += planets[t].angleSpeed;
+			planets[t].angle2 += planets[t].angleSpeed2;
+			Vector3 rot = {
+			planets[t].joint.x + planets[t].radius * sin(Math::Radians(planets[t].angle)) * cos(Math::Radians(planets[t].angle2)),
+			planets[t].joint.y + planets[t].radius * sin(Math::Radians(planets[t].angle)) * sin(Math::Radians(planets[t].angle2)),
+			planets[t].joint.z + planets[t].radius * cos(Math::Radians(planets[t].angle)),
+			
+			};
+			transform[t].SetPosition(rot); 
+			transform[t].AdjustEulerRotation(Vector3(planets[t].angleSpeed2, planets[t].angleSpeed, 0));
 			transform[t].Update();
 		}
 
+		planets[7].joint = transform[0].GetWorldPosition();
+		planets[8].joint = transform[0].GetWorldPosition();
+		planets[9].joint = transform[0].GetWorldPosition();
+		planets[10].joint = transform[1].GetWorldPosition();
+		planets[11].joint = transform[1].GetWorldPosition();
+		planets[12].joint = transform[1].GetWorldPosition();
+		planets[13].joint = transform[2].GetWorldPosition();
+		planets[14].joint = transform[2].GetWorldPosition();
+		planets[15].joint = transform[2].GetWorldPosition();
+		planets[16].joint = transform[3].GetWorldPosition();
+		planets[17].joint = transform[3].GetWorldPosition();
+		planets[18].joint = transform[3].GetWorldPosition();
+		planets[19].joint = transform[4].GetWorldPosition();
+		planets[20].joint = transform[4].GetWorldPosition();
+		planets[21].joint = transform[5].GetWorldPosition();
 
-		for (size_t t = 0; t < Components.size(); t++) {
-			Components[t]->Update(camera->ViewProj(), transform[t].getPosition(), transform[t].getScale(),
-				Matrix::CreateTranslation(Vector3(50, 50, 0)) * Matrix::CreateFromAxisAngle(transform[t].getRotationVector(), Math::Radians(transform[t].getRotationAngle().x)));
+
+		for (size_t t = 0; t < 23; t++) {
+			Components[t]->Update(camera->Proj().Transpose(), camera->View().Transpose(), transform[t].GetWorldMatrix().Transpose());
 		}
 
 		return true;
@@ -370,39 +498,64 @@
 	}
 	void GameApplication::ResetGame()
 	{
-		transform[0].setPosition(Vector3(100, 0, 200));
-		transform[1].setPosition(Vector3(0, 0, 0));
+		for (size_t t = 0; t < 22; t++) {
+			transform[t].SetPosition(Vector3(0, 0, 0));
+		}
+	
 
-		transform[0].setScale(Vector3(1, 10, 1));
-		transform[1].setScale(Vector3(1, 10, 1));
-		transform[2].setScale(Vector3(1.0f, 1.0f, 1.0f));
-		transform[2].setPosition(Vector3(0, 0, 0));
-		transform[3].setRotationAngle(Vector3(1, 0, 0));
-		transform[3].setPosition(Vector3(0, 0, 0));
-		transform[3].setScale(Vector3(10.0f, 10.0f, 10.0f));
+		transform[0].SetScale(Vector3(15.0f,15.0f,15.0f));
+		transform[1].SetScale(Vector3(15.0f,15.0f,15.0f));
+		transform[2].SetScale(Vector3(15.0f,15.0f,15.0f));
+		transform[3].SetScale(Vector3(15.0f,15.0f,15.0f));
+		transform[4].SetScale(Vector3(15.0f,15.0f,15.0f));	
+		transform[5].SetScale(Vector3(15.0f,15.0f,15.0f));
+		transform[6].SetScale(Vector3(30.0f,30.0f,30.0f));
 
-		transform[3].setRotationVector(Vector3(1, 0, 0));
+		transform[22].SetPosition(Vector3(0, 0, 0));
+		transform[22].SetScale(Vector3(10.0f, 10.0f, 10.0f));
+		transform[22].SetEulerRotate(Vector3(0, 0, 0));
 
 
-		transform[4].setRotationVector(Vector3(((double)rand() / (RAND_MAX)), ((double)rand() / (RAND_MAX)), ((double)rand() / (RAND_MAX))));
-		transform[5].setRotationVector(Vector3(((double)rand() / (RAND_MAX)), ((double)rand() / (RAND_MAX)), ((double)rand() / (RAND_MAX))));
+		for (size_t t = 7; t < 22; t++) {
+			transform[t].SetPosition(Vector3(2.0f, 2.0f, 2.0f));
+		}
 
-		transform[0].setRotationVector(Vector3(1, 0, 0));
-		transform[1].setRotationVector(Vector3(0, 1, 0));
-		transform[2].setRotationVector(Vector3(0, 0, 1));
+		for (size_t t = 7; t < 22; t++) {
+			planets[t].angleSpeed = rand_FloatRange(-0.5, 0.5);
+			planets[t].angleSpeed2 = rand_FloatRange(-0.5, 0.5);
+			planets[t].radius = rand_FloatRange(10, 20);
+		}
 
-		transform[0].setRotationSpeed(Vector3(8, 0, 0));
-		transform[1].setRotationSpeed(Vector3(2, -5, 0));
-		transform[2].setRotationSpeed(Vector3(-10, 0, 1));
+	
 
-		transform[0].setRotationAngle(Vector3(0, 1, 1));
-		transform[1].setRotationAngle(Vector3(1, 0, 1));
-		transform[2].setRotationAngle(Vector3(0, 0, 1));
 
-		transform[4].setPosition(Vector3(0, 0, 0));
-		transform[4].setScale(Vector3(10.0f, 10.0f, 10.0f));
 
-		transform[5].setPosition(Vector3(0, 0, 0));
-		transform[5].setScale(Vector3(10.0f, 10.0f, 10.0f));
+		planets[0].angleSpeed = rand_FloatRange(-0.5, 0.5);
+		planets[1].angleSpeed = rand_FloatRange(-0.5, 0.5);
+		planets[2].angleSpeed = rand_FloatRange(-0.5, 0.5);
+		planets[3].angleSpeed = rand_FloatRange(-0.5, 0.5);
+		planets[4].angleSpeed = rand_FloatRange(-0.5, 0.5);
+		planets[5].angleSpeed = rand_FloatRange(-0.5, 0.5);
+		planets[6].angleSpeed = rand_FloatRange(-1, 1);
+		planets[0].angleSpeed2 = rand_FloatRange(-0.5, 0.5);
+		planets[1].angleSpeed2 = rand_FloatRange(-0.5, 0.5);
+		planets[2].angleSpeed2 = rand_FloatRange(-0.5, 0.5);
+		planets[3].angleSpeed2 = rand_FloatRange(-0.5, 0.5);
+		planets[4].angleSpeed2 = rand_FloatRange(-0.5, 0.5);
+		planets[5].angleSpeed2 = rand_FloatRange(-0.5, 0.5);
+		planets[6].angleSpeed2 = rand_FloatRange(-1, 1);
+
+		planets[0].radius = rand_FloatRange(30, 90);
+		planets[1].radius = rand_FloatRange(30, 90);
+		planets[2].radius = rand_FloatRange(30, 90);
+		planets[3].radius = rand_FloatRange(30, 90);
+		planets[4].radius = rand_FloatRange(30, 90);
+		planets[5].radius = rand_FloatRange(30, 90);
+		planets[6].radius = 0;
+
+
+		system->DrawLine(Vector3(0, -200, 0), Vector3(0, 200, 0), Color(0, 255, 0, 255));
+		system->DrawLine(Vector3(-200, 0, 0), Vector3(200, 0, 0), Color(255, 0, 0, 255));
+		system->DrawLine(Vector3(0,0, -200), Vector3(0, 0, 200), Color(0, 0, 255, 255));
 	}
 

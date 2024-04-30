@@ -1,5 +1,5 @@
 #pragma once
-#include "include/SimpleMath.h"
+#include "SimpleMath.h"
 using BoundingBox = DirectX::BoundingBox;
 using OrientedBoundingBox = DirectX::BoundingOrientedBox;
 using BoundingFrustum = DirectX::BoundingFrustum;
@@ -28,3 +28,4 @@ namespace Math {
 	inline constexpr float Degrees(float radians) { return radians * RadiansToDegrees; }
 
 }
+

@@ -1,7 +1,7 @@
 #pragma once
 #include "Exports.h"
 #include "GameComponent.h"
-#include "include/SimpleMath.h"
+#include "SimpleMath.h"
 #include "MathTypes.h"
 
 class ENGINE_API SphereComponent :
@@ -20,12 +20,10 @@ private:
 
     struct VS_CONSTANT_BUFFER
     {
-        Matrix gWorldViewProj;
-        Vector4 offset;
-        Vector4 scale;
-        Matrix rotation;
+        Matrix world;
+        Matrix cameraView;
+        Matrix cameraProj;
     } buffer;
-
 
     // TODO: It doesnt work like that , points must declared somwhere else
     std::vector<Vector4> points;
@@ -55,7 +53,7 @@ public:
     void DestroyResources();
     void Reload();
     bool Initialize();
-    virtual void Update(DirectX::SimpleMath::Matrix mat, Vector3 offset, Vector3 scale, Matrix rotation);
+    virtual void Update(Matrix cameraProjection, Matrix cameraView, Matrix world);
     void Update();
     void Draw();
 };
