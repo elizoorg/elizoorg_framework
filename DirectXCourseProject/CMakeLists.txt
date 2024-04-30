@@ -79,7 +79,12 @@ add_library(${PROJECT_NAME} SHARED ${MODULE_FILES} ${HEADER_FILES})
 
 
 find_package(imgui CONFIG REQUIRED)
-target_link_libraries(DirectXCourseProject PRIVATE imgui::imgui)
+find_package(assimp CONFIG REQUIRED)
+target_link_libraries(
+	DirectXCourseProject 
+imgui::imgui 
+assimp::assimp
+)
 
 #include(GenerateExportHeader)
 #generate_export_header(DLib)

@@ -1,5 +1,5 @@
 {
-  "name": "elizoorg_framework",
+  "name": "elizoorg",
   "version-string": "0.1.0",
   "dependencies": [
       { 
@@ -9,6 +9,12 @@
           "win32-binding",
           "docking-experimental"
         ] 
-    }
+    },
+	{
+    "name": "assimp"
+	},
+	{
+		"name" :"zlib"
+	}
   ]
 }

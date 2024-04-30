@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-project (elizoorg_framework)
+project (elizoorg)
 
 
 set(Example_VERSION_MAJOR 2)
@@ -23,6 +23,8 @@ add_subdirectory("GameApplication")
 
 
 find_package(imgui CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
+
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 

@@ -18,6 +18,15 @@
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx11.h>
 
+#include <assimp/Importer.hpp>
+#include <assimp/mesh.h>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+
+
+
+
 class ENGINE_API Engine::Application;
 
 class GameApplication: public Engine::Application
@@ -71,6 +80,10 @@ class GameApplication: public Engine::Application
 		{
 			return ((b - a) * ((float)rand() / RAND_MAX)) + a;
 		}
+
+
+		aiNode* node;
+		Assimp::Importer importer;
 
 		struct PlanetTransform {
 			Vector3 joint = Vector3(0,0,0);

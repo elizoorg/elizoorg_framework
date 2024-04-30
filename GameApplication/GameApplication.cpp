@@ -353,6 +353,12 @@
 		}
 
 
+
+
+		const aiScene* scene = importer.ReadFile("model/testmodel.obj", aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
+
+
+
 	}
 
 	void GameApplication::MessageHandler()
