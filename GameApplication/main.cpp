@@ -1,4 +1,3 @@
-
 #include "GameApplication.h"
 int main()
 {

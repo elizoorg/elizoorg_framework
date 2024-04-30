@@ -23,6 +23,8 @@ endif()
 include_directories(include)
 
 
+
+
 set(HEADER_FILES 
 	include/Application.h 
 	include/Camera.h 
@@ -42,14 +44,6 @@ set(HEADER_FILES
 	include/pch.h
 	include/Exports.h
 	include/Delegates.h
-    include/imconfig.h
-    include/imgui.h
-    include/imgui_impl_dx11.h
-    include/imgui_impl_win32.h
-    include/imgui_internal.h
-    include/imstb_rectpack.h
-    include/imstb_textedit.h
-    include/imstb_truetype.h
     include/SimpleMath.h
     include/SimpleMath.inl
 )
@@ -71,12 +65,6 @@ set(MODULE_FILES
 	src/VertexPositionNormalBinormalTangentColorTex.cpp
 	src/VertexPositionTex.cpp
 	src/Delegates.cpp
-    src/imgui.cpp
-    src/imgui_draw.cpp
-    src/imgui_impl_dx11.cpp
-    src/imgui_impl_win32.cpp
-    src/imgui_tables.cpp
-    src/imgui_widgets.cpp
     src/SimpleMath.cpp
 )
 
@@ -85,9 +73,13 @@ add_library(${PROJECT_NAME} SHARED ${MODULE_FILES} ${HEADER_FILES})
 
 
  if (MSVC)
-     target_compile_definitions(${PROJECT_NAME} PUBLIC UNICODE _UNICODE)
+	target_compile_definitions(${PROJECT_NAME} PUBLIC UNICODE _UNICODE)
+	target_compile_options(${PROJECT_NAME} PRIVATE "/MP")
  endif()
 
+
+find_package(imgui CONFIG REQUIRED)
+target_link_libraries(DirectXCourseProject PRIVATE imgui::imgui)
 
 #include(GenerateExportHeader)
 #generate_export_header(DLib)

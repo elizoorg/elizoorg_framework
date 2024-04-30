@@ -14,9 +14,9 @@
 #include <ctime>
 #include <math.h>
 
-#include <include/imgui.h>
-#include <include/imgui_impl_win32.h>
-#include <include/imgui_impl_dx11.h>
+#include <imgui.h>
+#include <imgui_impl_win32.h>
+#include <imgui_impl_dx11.h>
 
 class ENGINE_API Engine::Application;
 
