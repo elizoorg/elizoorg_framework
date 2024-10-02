@@ -14,7 +14,7 @@
     "name": "assimp"
 	},
 	{
-		"name" :"zlib"
+		"name":"zlib"
 	}
   ]
 }

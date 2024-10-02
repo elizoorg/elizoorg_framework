@@ -20,8 +20,6 @@ struct ScreenSize {
 
 class ENGINE_API InputDevice
 {
-	struct KeyboardInputEventArgs;
-	struct RawMouseEventArgs;
 	std::unordered_set<Keys>* keys;
 
 	friend class Engine::Application;

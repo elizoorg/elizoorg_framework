@@ -38,8 +38,9 @@ Vector3 Transform::GetForwardVector()
 {
 	Vector3 v = Vector3{ worldTranspose._13, worldTranspose._23, worldTranspose._33 };
 	v.Normalize();
-	return v * -1;
+	return v;
 }
+
 
 Matrix Transform::GetWorldMatrix()
 {
@@ -52,22 +53,30 @@ bool Transform::IsDirty()
 }
 
 Matrix Transform::CalculateWorldMatrix()
-{
-	Matrix result = Matrix::CreateScale(localScale) * Matrix::CreateFromQuaternion(localRotate) * Matrix::CreateTranslation(localPosition);
+{	
+	Matrix result = Matrix::CreateScale(localScale) * Matrix::CreateFromQuaternion(localRotate) * 
+		Matrix::CreateTranslation(localPosition);
+
 	if (parent != nullptr) {
-		result = result * parent->CalculateWorldMatrix();
+		result  = result * parent->GetWorldMatrix();
+
+		/*Vector3 new_pos = Vector3::Transform(Vector3(localPosition.x,localPosition.y,localPosition.z), result);
+		Vector3 new_rot = Vector3::TransformNormal(Vector3(localRotate.x, localRotate.y, localRotate.z), result);
+		result = Matrix::CreateScale(localScale) * Matrix::CreateFromYawPitchRoll(new_rot) * Matrix::CreateTranslation(new_pos);*/
+
 	}
+
+
+
 	return result;
 }
 
 Transform::Transform(Vector3 pos, Quaternion rot, Vector3 scale): localPosition(pos),localRotate(rot), localScale(scale)
 {
-	parent = nullptr;
 }
 
 Transform::Transform():Transform(Vector3::Zero,Quaternion::Identity,Vector3::One)
 {
-	parent = nullptr;
 }
 
 void Transform::SetPosition(const Vector3& pos)

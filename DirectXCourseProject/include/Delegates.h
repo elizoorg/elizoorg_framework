@@ -430,7 +430,7 @@ public:
 	constexpr static const unsigned int INVALID_ID = (unsigned int)~0;
 private:
 	unsigned int m_Id;
-	static unsigned  ENGINE_API int CURRENT_ID;
+	static unsigned ENGINE_API int CURRENT_ID;
 
 	static int GetNewID()
 	{

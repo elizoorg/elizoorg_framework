@@ -15,7 +15,7 @@ void DebugRenderSysImpl::InitPrimitives()
 	HRESULT res;
 	ID3DBlob* errorCode = nullptr;
 	
-	res = D3DCompileFromFile(L"./Shaders/Simple.hlsl",
+	res = D3DCompileFromFile(L"Shaders/Simple.hlsl",
 		nullptr /*macros*/,
 		nullptr /*include*/,
 		"VSMain",
@@ -25,9 +25,31 @@ void DebugRenderSysImpl::InitPrimitives()
 		&vertexPrimCompResult,
 		&errorCode);
 
+	if (FAILED(res))
+	{
+		// If the shader failed to compile it should have written something to
+		// the error message.
+		if (errorCode)
+		{
+			auto compileErrors =
+				static_cast<char*>(errorCode->GetBufferPointer());
+
+			std::cout << compileErrors << std::endl;
+		}
+		// If there was  nothing in the error message then it simply could not
+		// find the shader file itself.
+		else
+		{
+			MessageBox(game->getDisplay()->getHWND(),
+			           L"MyVeryFirst11Shader.hlsl", L"Missing Shader File",
+			           MB_OK);
+		}
+
+	}
+
 	if(errorCode) errorCode->Release();
 	
-	res = D3DCompileFromFile(L"./Shaders/Simple.hlsl",
+	res = D3DCompileFromFile(L"Shaders/Simple.hlsl",
 		nullptr /*macros*/,
 		nullptr /*include*/,
 		"PSMain",
@@ -37,6 +59,28 @@ void DebugRenderSysImpl::InitPrimitives()
 		&pixelPrimCompResult,
 		&errorCode);
 
+
+	if (FAILED(res))
+	{
+		// If the shader failed to compile it should have written something to
+		// the error message.
+		if (errorCode)
+		{
+			auto compileErrors =
+				static_cast<char*>(errorCode->GetBufferPointer());
+
+			std::cout << compileErrors << std::endl;
+		}
+		// If there was  nothing in the error message then it simply could not
+		// find the shader file itself.
+		else
+		{
+			MessageBox(game->getDisplay()->getHWND(),
+			           L"MyVeryFirst11Shader.hlsl", L"Missing Shader File",
+			           MB_OK);
+		}
+
+	}
 	if (errorCode) errorCode->Release();
 
 	game->getDevice()->CreateVertexShader(vertexPrimCompResult->GetBufferPointer(), vertexPrimCompResult->GetBufferSize(), nullptr, &vertexPrimShader);

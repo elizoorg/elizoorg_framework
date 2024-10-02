@@ -44,7 +44,7 @@ bool PlaneComponent::Initialize()
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
-			MessageBox(_app->getDisplay()->getHWND(), L"MyVeryFirstShader.hlsl", L"Missing Shader File", MB_OK);
+			MessageBox(_app->getDisplay()->getHWND(), L"MyVeryFirst2312Shader.hlsl", L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -68,7 +68,7 @@ bool PlaneComponent::Initialize()
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
-			MessageBox(_app->getDisplay()->getHWND(), L"MyVeryFirstShader.hlsl", L"Missing Shader File", MB_OK);
+			MessageBox(_app->getDisplay()->getHWND(), L"MyVeryFirstSh231ader.hlsl", L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -156,7 +156,7 @@ bool PlaneComponent::Initialize()
 
 }
 
-void PlaneComponent::Update(Matrix cameraProjection,Matrix cameraView, Matrix world)
+void PlaneComponent::Update(Matrix cameraProjection,Matrix cameraView, Matrix world, Matrix InverseView)
 {
 	if (g_pConstantBuffer11) {
 		g_pConstantBuffer11->Release();
@@ -203,4 +203,8 @@ void PlaneComponent::Draw()
 	_app->getContext()->PSSetShader(pixelShader, nullptr, 0);
 	_app->getContext()->VSSetConstantBuffers(0, 1, &g_pConstantBuffer11);
 	_app->getContext()->DrawIndexed(indices.size(), 0, 0);
+}
+
+void PlaneComponent::PrepareFrame()
+{
 }

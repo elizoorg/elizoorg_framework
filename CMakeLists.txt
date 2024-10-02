@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.16)
 # Enable Hot Reload for MSVC compilers if supported.
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 
 project (elizoorg)
 
@@ -13,7 +13,7 @@ set(Example_VERSION_MAJOR 2)
 set(Example_VERSION_MINOR 3)
 set(Example_VERSION_PATCH 1)
 
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set (CMAKE_CXX_STANDARD 20)
 
@@ -29,6 +29,11 @@ find_package(assimp CONFIG REQUIRED)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT GameApplication)
+
+
+
+
+set(VCPKG_CONFIGURE_MAKE_OPTIONS VCPKG_CMAKE_CONFIGURE_OPTIONS_DEBUG)
 
 include(InstallRequiredSystemLibraries)
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")

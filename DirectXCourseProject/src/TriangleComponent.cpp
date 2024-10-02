@@ -21,7 +21,7 @@ void TriangleComponent::Reload()
 
 bool TriangleComponent::Initialize()
 {
-	res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl",
+	res = D3DCompileFromFile(L".//Shaders//MyVeryFirstShader.hlsl",
 	                         nullptr /*macros*/,
 	                         nullptr /*include*/,
 	                         "VSMain",
@@ -43,7 +43,7 @@ bool TriangleComponent::Initialize()
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
-			MessageBox(_app->getDisplay()->getHWND(), L"MyVeryFirstShader.hlsl", L"Missing Shader File", MB_OK);
+			MessageBox(_app->getDisplay()->getHWND(), L"MyVeryFirst11Shader.hlsl", L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -67,7 +67,7 @@ bool TriangleComponent::Initialize()
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
-			MessageBox(_app->getDisplay()->getHWND(), L"MyVeryFirstShader.hlsl", L"Missing Shader File", MB_OK);
+			MessageBox(_app->getDisplay()->getHWND(), L"MyVeryFirst11Shader.hlsl", L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -163,7 +163,6 @@ bool TriangleComponent::Initialize()
 	CD3D11_RASTERIZER_DESC rastDesc = {};
 	rastDesc.CullMode =   D3D11_CULL_NONE;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
-
 	rastDesc.FrontCounterClockwise = true;
 
 	//ID3D11RasterizerState* rastState;
@@ -172,7 +171,7 @@ bool TriangleComponent::Initialize()
 
 }
 
-void TriangleComponent::Update(Matrix cameraProjection, Matrix cameraView, Matrix world)
+void TriangleComponent::Update(Matrix cameraProjection, Matrix cameraView, Matrix world, Matrix InverseView)
 {
 	if (g_pConstantBuffer11) {
 		g_pConstantBuffer11->Release();
@@ -220,4 +219,8 @@ void TriangleComponent::Draw()
 	_app->getContext()->PSSetShader(pixelShader, nullptr, 0);
 	_app->getContext()->VSSetConstantBuffers(0, 1, &g_pConstantBuffer11);
 	_app->getContext()->DrawIndexed(36, 0, 0);
+}
+
+void TriangleComponent::PrepareFrame()
+{
 }

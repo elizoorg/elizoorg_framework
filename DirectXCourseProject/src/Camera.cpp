@@ -1,7 +1,5 @@
 #include "Camera.h"
-
 #include <iostream>
-
 #include "Application.h"
 
 Camera::Camera()
@@ -10,7 +8,7 @@ Camera::Camera()
 	mUp(0.0f, 1.0f, 0.0f),
 	mLook(0.0f, 0.0f, 1.0f)
 {
-	SetLens(70, _app->getDisplay()->getWidth() / _app->getDisplay()->getHeight(), 0.1f, 1000.0f);
+	SetLens(FOV, ASPECT_RATIO, 0.1f, 1000.0f);
 }
 Camera::~Camera()
 {
@@ -126,7 +124,7 @@ void Camera::SetLens(float fovY, float aspect, float zn, float zf)
 	mNearWindowHeight = 2.0f * mNearZ * tanf(0.5f * mFovY);
 	mFarWindowHeight = 2.0f * mFarZ * tanf(0.5f * mFovY);
 	const float fovRadians = DirectX::XMConvertToRadians(mFovY);
-	mProj = DirectX::XMMatrixPerspectiveFovLH(fovRadians, mAspect, mNearZ, mFarZ);
+	mProj = DirectX::XMMatrixPerspectiveFovRH(fovRadians, mAspect, mNearZ, mFarZ);
 	//mProj = DirectX::XMMatrixOrthographicLH(1600, 800, 0.1f, 1.0f);
 	
 	//mProj = Matrix::CreateOrthographic(800, 800, mNearZ, mFarZ);
@@ -216,9 +214,13 @@ void Camera::Rotate(Vector2 offset)
 	if (_app->isMouseUsed) {
 
 
-	transform.AdjustEulerRotation(
-		 static_cast<float>(offset.x) *_app->deltaTime * xMouseSpeed,
-		-1 * static_cast<float>(offset.y) * _app->deltaTime * yMouseSpeed, 0);
+	//transform.AdjustEulerRotation(
+	//	 -1 * static_cast<float>(offset.x) *_app->deltaTime * xMouseSpeed,
+	//	static_cast<float>(offset.y) * _app->deltaTime * yMouseSpeed, 0);
+		transform.AdjustEulerRotation(
+			-1 * static_cast<float>(offset.x) *_app->deltaTime * xMouseSpeed,
+			0, 0);
+
 	}
 }
 
@@ -273,8 +275,8 @@ void Camera::Update()
 	}
 	if (isDirty) {
 		focusPosition = transform.GetForwardVector() + transform.GetWorldPosition();
-		mView = XMMatrixLookAtLH(transform.GetWorldPosition(),focusPosition, transform.GetUpVector());
-		SetLens(103, 1, 0.1f, 1000.0f);
+		mView = XMMatrixLookAtRH(transform.GetWorldPosition(),focusPosition, transform.GetUpVector());
+		SetLens(90, 16.0/9.0, 0.1f, 1000.0f);
 		isDirty = false;
 	}
 

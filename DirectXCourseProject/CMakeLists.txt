@@ -18,7 +18,7 @@ if(NOT DEFINED CMAKE_CXX_STANDARD OR CMAKE_CXX_STANDARD LESS 20)
 	message(FATAL_ERROR "ERROR: CMAKE_CXX_STANDARD is not set or it is too low. Minimum C++ v20 is required to compile \"DirectXProject\" library.")
 endif()
 
-
+SET(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 include_directories(include)
 
@@ -26,47 +26,65 @@ include_directories(include)
 
 
 set(HEADER_FILES 
-	include/Application.h 
-	include/Camera.h 
-	include/Display.h 
-	include/GameComponent.h
-	include/DebugRenderSysImpl.h
-	include/InputDevice.h 
-	include/PlaneComponent.h 
-	include/SphereComponent.h
-	include/Transform.h 
-	include/TriangleComponent.h 
-	include/VertexPositionColor.h
-	include/VertexPositionNormalBinormalTangentColorTex.h
-	include/VertexPositionTex.h
-	include/Keys.h 
-	include/MathTypes.h 
-	include/pch.h
-	include/Exports.h
-	include/Delegates.h
-    include/SimpleMath.h
-    include/SimpleMath.inl
+include/Application.h
+include/Camera.h
+include/DebugRenderSysImpl.h
+include/DirectionalLight.h
+include/Display.h
+include/Exports.h
+include/GameComponent.h
+include/GBuffer.h
+include/InputDevice.h
+include/Keys.h
+include/LightComponent.h
+include/LightData.h
+include/MathTypes.h
+include/Mesh.h
+include/ModelComponent.h
+include/ModelLoader.h
+include/pch.h
+include/PlaneComponent.h
+include/SafeRelease.hpp
+include/ShaderManager.h
+include/SphereComponent.h
+include/TextureLoader.h
+include/Transform.h
+include/TriangleComponent.h
+include/VertexPositionColor.h
+include/VertexPositionNormalBinormalTangentColorTex.h
+include/VertexPositionTex.h
+include/SimpleMath.inl
+include/SimpleMath.h
+include/Delegates.h
 )
 
 
 
 set(MODULE_FILES
-	src/Application.cpp 
-	src/Camera.cpp 
-	src/DebugRenderSysImpl.cpp
-	src/Display.cpp 
-	src/GameComponent.cpp
-	src/InputDevice.cpp 
-	src/PlaneComponent.cpp 
-	src/SphereComponent.cpp
-	src/Transform.cpp 
-	src/TriangleComponent.cpp
-	src/VertexPositionColor.cpp
-	src/VertexPositionNormalBinormalTangentColorTex.cpp
-	src/VertexPositionTex.cpp
-	src/Delegates.cpp
-    src/SimpleMath.cpp
+src/Application.cpp
+src/Camera.cpp
+src/DebugRenderSysImpl.cpp
+src/DirectionalLight.cpp
+src/Display.cpp
+src/GameComponent.cpp
+src/GBuffer.cpp
+src/InputDevice.cpp
+src/LightComponent.cpp
+src/ModelComponent.cpp
+src/ModelLoader.cpp
+src/PlaneComponent.cpp
+src/ShaderManager.cpp
+src/SphereComponent.cpp
+src/TextureLoader.cpp
+src/Transform.cpp
+src/TriangleComponent.cpp
+src/VertexPositionColor.cpp
+src/VertexPositionNormalBinormalTangentColorTex.cpp
+src/VertexPositionTex.cpp
+src/Delegates.cpp
+src/SimpleMath.cpp
 )
+
 
 
 add_library(${PROJECT_NAME} SHARED ${MODULE_FILES} ${HEADER_FILES})

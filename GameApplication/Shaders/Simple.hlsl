@@ -19,8 +19,8 @@ cbuffer ConstMeshBuf : register(b1) {
 
 struct VS_IN
 {
-	float4 pos : POSITION;
-	float4 col : COLOR;
+	float4 pos : POSITION0;
+	float4 col : COLOR0;
 };
 
 struct VS_MESH_IN

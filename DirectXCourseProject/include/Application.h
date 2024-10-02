@@ -7,6 +7,8 @@
 #include "GameComponent.h"
 #include "Camera.h"
 #include "MathTypes.h"
+#include "DirectionalLight.h"
+#include "ShaderManager.h"
 #include <cstdlib>
 #include <ctime>
 namespace Engine{
@@ -29,6 +31,7 @@ namespace Engine{
 		virtual bool Update() = 0;
 		virtual void UpdateInternal() = 0;
 
+		virtual void ResetGame() = 0;
 
 
 		bool intersect(Vector2 min_a, Vector2 max_a, Vector2 min_b, Vector2 max_b)
@@ -42,7 +45,6 @@ namespace Engine{
 
 		int player1_score = 0;
 		int player2_score = 0;
-		void ResetGame();
 
 		bool isMouseUsed = true;
 
@@ -50,12 +52,28 @@ namespace Engine{
 
 		Microsoft::WRL::ComPtr<ID3D11Device> getDevice() { return device; };
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> getStencilState() { return depthStencilState.Get(); };
-		ID3D11DeviceContext* getContext() { return context; };
 
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> getCSM() {
+			return depthShadowSrv;
+		}
+
+
+
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> getLightBuffer() { return LightBuffer; }
+		Microsoft::WRL::ComPtr<ID3D11Buffer> getCascadeBuffer() { return cascadeCBuffer_; }
+
+		ID3D11DeviceContext* getContext() { return context; };
+		Camera* getCamera(){return camera;}
 
 
 		WinApi_Display* getDisplay() { return _display; };
+		DirectionalLight* getLight() { return light; }
 		InputDevice* getInput() { return Device; }
+
+
+		ShaderManager* manager;
+		ShaderManager* getShaderManager() { return manager; }
 
 		std::chrono::time_point<std::chrono::steady_clock> PrevTime = std::chrono::steady_clock::now();
 		float	deltaTime = 0;
@@ -79,10 +97,24 @@ namespace Engine{
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthStencilView;
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState;
 
+
+		Microsoft::WRL::ComPtr<ID3D11Texture2D> shadowTextureArray;
+		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthShadowDsv;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> depthShadowSrv;
+
+		struct CSM_CONSTANT_BUFFER
+		{
+			Matrix ViewProj[5];
+			Vector4 Distance;
+		};
 		
+		Microsoft::WRL::ComPtr<ID3D11Buffer> cascadeCBuffer_;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> LightBuffer;
+		LightData lightData{};
 
 		Camera *camera;
 		InputDevice *Device;
+		DirectionalLight *light;
 
 
 		

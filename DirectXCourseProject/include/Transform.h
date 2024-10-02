@@ -35,18 +35,19 @@ public:
 	Vector3 GetUpVector();
 	Vector3 GetForwardVector();
 
+
 	Matrix GetWorldMatrix();
 
 	bool IsDirty();
 
-
+	Quaternion localRotate = Quaternion::Identity;
+	Vector3 localScale = Vector3::One;
 private:
 	Matrix CalculateWorldMatrix();
 
 	Vector3 localEulerAngles = Vector3::Zero;
 	Vector3 localPosition = Vector3::Zero;
-	Vector3 localScale = Vector3::One;
-	Quaternion localRotate = Quaternion::Identity;
+	
 
 	Matrix world = Matrix::Identity;
 	Matrix worldTranspose;
